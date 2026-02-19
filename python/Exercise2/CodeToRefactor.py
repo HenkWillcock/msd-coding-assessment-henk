@@ -8,7 +8,7 @@ class People:
 
     def __init__(self, name: str, dob: datetime = None):
         self._name = name
-        self._dob = dob if dob is not None else People._Under16
+        self._dob = dob or People._Under16
 
     @property
     def name(self) -> str:
@@ -24,39 +24,32 @@ class BirthingUnit:
     def __init__(self):
         self._people = []
 
-    def get_people(self, i: int) -> List[People]:
+    def get_people(self, number_of_people: int) -> List[People]:
         """
-        GetPeoples
-        :param j:
-        :return: List[object]
+        Randomly generates a number of people,
+        adds them permanently to the BirthingUnit, then returns all people.
         """
-        for j in range(i):
-         try:
-           # Creates a dandon Name
-           name = ""
-           random_gen = random.Random()
-           if random_gen.randint(0, 1) == 0:
-               name = "Bob"
-           else:
-               name = "Betty"
-           # Adds new people to the list
-           age_days = random_gen.randint(18, 85) * 356
-           birth_date = datetime.utcnow() - timedelta(days=age_days)
-           self._people.append(People(name, birth_date))
-         except Exception as e:
-             # Dont think this should ever happen
-             raise Exception("Something failed in user creation")
+
+        for _ in range(number_of_people):
+            age_days = random.randint(18, 85) * 356
+            self._people.append(
+                People(
+                    name=random.choice(["Bob", "Betty"]),
+                    dob=datetime.utcnow() - timedelta(days=age_days),
+                ))
+
         return self._people
 
     def _get_bobs(self, older_than_30: bool):
-      if older_than_30:
-          return [x for x in self._people if x.name == "Bob" and x.dob >= (datetime.now() - timedelta(days=30 * 356))]
-      else:
-          return [x for x in self._people if x.name == "Bob"]
+        bobs = [x for x in self._people if x.name == "Bob"]
+
+        if older_than_30:
+            bobs = [b for b in bobs if b.dob >= (datetime.now() - timedelta(days=30 * 356))]
+
+        return bobs
 
     def get_married(self, p: People, last_name: str) -> str:
         if "test" in last_name:
             return p.name
-        if len(p.name + last_name) > 255:
-            (p.name + " " + last_name)[:255]
-        return p.name + " " + last_name
+        else:
+            return p.name + " " + last_name
