@@ -3,11 +3,22 @@ from typing import List
 import random
 
 
+# SUGGESTION: This class should be named "Person", since it represents one person not multiple.
 class People:
+    # SUGGESTION: utcnow() is deprecated, please use datetime.now(tz=datetime.UTC)
+
+    # SUGGESTION: This does not take into account leap years.
     _Under16 = datetime.utcnow() - timedelta(days=15 * 365)
 
+    # SUGGESTION: dob should be a date not a datetime.
     def __init__(self, name: str, dob: datetime = None):
         self._name = name
+
+        # SUGGESTION: Below logic can be simplified to just: self._dob = dob or People._Under16
+
+        # QUESTION: What is the purpose of this _Under16 default logic?
+        # Date of birth is usually a mandatory field, and having an arbitrary default
+        # could be confusing.
         self._dob = dob if dob is not None else People._Under16
 
     @property
@@ -20,20 +31,38 @@ class People:
 
 
 class BirthingUnit:
+    # QUESTION: What is the meaning of this "MaxItemsToRetrieve" comment?
     # MaxItemsToRetrieve
     def __init__(self):
         self._people = []
 
+    # SUGGESTION: This method is poorly named.
+    # It doesn't just fetch people, it generates them first.
+    # A more descriptive name could be "generate_then_get_people()"
     def get_people(self, i: int) -> List[People]:
+        
         """
         GetPeoples
+        # SUGGESTION: The parameter is not called "j", it's "i".
+        # It should also be something more descriptive, e.g. "number_of_people"
         :param j:
+
+        # SUGGESTION:
+        # You've already more accurately specified the return type as a type hint,
+        # So no need to include this in the docstring.
+        # If you wanted to include a description of what's returned on the other hand,
+        # that would be useful.
         :return: List[object]
         """
+
+        # SUGGESTION: "j" variable is never used,
+        # in python use an underscore to indicate it's just a placeholder.
         for j in range(i):
+         # SUGGESTION: Please fix indentation.
          try:
            # Creates a dandon Name
-           name = ""
+           name = ""  # SUGGESTION: No need to define name here.
+           # SUGGESTION: random.choice(["Bob", "Betty"]) is more descriptive.
            random_gen = random.Random()
            if random_gen.randint(0, 1) == 0:
                name = "Bob"
@@ -44,19 +73,41 @@ class BirthingUnit:
            birth_date = datetime.utcnow() - timedelta(days=age_days)
            self._people.append(People(name, birth_date))
          except Exception as e:
+             # SUGGESTION: Catching all exceptions and re-raising just means you lose
+             # the information of the original exception. Do not do this.
+
              # Dont think this should ever happen
              raise Exception("Something failed in user creation")
         return self._people
 
+    # QUESTION: Why is this method private,
+    # when it's not accessed anywhere internally?
     def _get_bobs(self, older_than_30: bool):
       if older_than_30:
+          # SUGGESTION: This logic is wrong, it's giving Bob's younger than 30.
+          # It's also confusing, a better way might be this:
+          #     age = datetime.today().year - dob.year
+          #     Then filter for age >= 30
+
+          # SUGGESTION: You could calculate 
+          #     "x.dob >= (datetime.now() - timedelta(days=30 * 356))" one time and store
+          #     before iterating for improved performance.
+          
           return [x for x in self._people if x.name == "Bob" and x.dob >= (datetime.now() - timedelta(days=30 * 356))]
       else:
           return [x for x in self._people if x.name == "Bob"]
 
     def get_married(self, p: People, last_name: str) -> str:
+        # QUESTION: What is the purpose of this "test" logic?
         if "test" in last_name:
             return p.name
+
+        # QUESTION: What is the purpose of this trucating logic?
         if len(p.name + last_name) > 255:
+            # SUGGESTION: This does nothing, the result is not assigned to anything.
             (p.name + " " + last_name)[:255]
+
+        # SUGGESTION: If the person already has a last name,
+        # it will just be added, not replaced.
+        # Also, if last_name is empty, an empty space is still added.
         return p.name + " " + last_name
