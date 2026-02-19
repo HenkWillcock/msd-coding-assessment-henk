@@ -20,11 +20,11 @@ class People:
 
 
 class BirthingUnit:
-    # MaxItemsToRetrieve
+
     def __init__(self):
         self._people = []
 
-    def get_people(self, number_of_people: int) -> List[People]:
+    def generate_and_return_people(self, number_of_people: int) -> List[People]:
         """
         Randomly generates a number of people,
         adds them permanently to the BirthingUnit, then returns all people.
@@ -40,10 +40,10 @@ class BirthingUnit:
 
         return self._people
 
-    def _get_bobs(self, older_than_30: bool):
+    def get_bobs(self, younger_than_30: bool):
         bobs = [x for x in self._people if x.name == "Bob"]
 
-        if older_than_30:
+        if younger_than_30:
             bobs = [b for b in bobs if b.dob >= (datetime.now() - timedelta(days=30 * 356))]
 
         return bobs
