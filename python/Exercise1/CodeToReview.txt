@@ -111,3 +111,19 @@ class BirthingUnit:
         # it will just be added, not replaced.
         # Also, if last_name is empty, an empty space is still added.
         return p.name + " " + last_name
+
+
+# Of all the code smells, I think catching and simply rethrowing
+# an exception while hiding it's internal information is the most dangerous.
+# It is bad for 3 reasons:
+#
+#   * It adds unnecessary lines of code, making it harder to read and understand. 
+#   * It makes it look like intended behaviour to future developers.
+#        so they might hesitate to fix it or make changes.
+#   * It makes diagnosing issues more difficult since it hides the stack trace.
+
+
+# In addition, having a method name "get_people()" implies it just returns information,
+#  so most developers will assume it's safe to call just for information gathering.
+#  However, since it generates people and changes the state permanently,
+#  this is confusing and very likely to cause problems in the future.
