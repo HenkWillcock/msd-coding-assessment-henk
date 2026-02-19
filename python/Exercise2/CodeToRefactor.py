@@ -44,7 +44,8 @@ class BirthingUnit:
         bobs = [x for x in self._people if x.name == "Bob"]
 
         if younger_than_30:
-            bobs = [b for b in bobs if b.dob >= (datetime.now() - timedelta(days=30 * 356))]
+            latest_dob_still_under_30 = datetime.now() - timedelta(days=30 * 356)
+            bobs = [b for b in bobs if b.dob >= latest_dob_still_under_30]
 
         return bobs
 
