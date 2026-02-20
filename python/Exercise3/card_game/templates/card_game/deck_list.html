@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Decks</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .deck-list { list-style: none; padding: 0; }
+        .deck-list li { margin: 10px 0; }
+        .deck-list a { 
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .deck-list a:hover { background-color: #0056b3; }
+        .empty { color: #999; }
+    </style>
+</head>
+<body>
+    <h1>Decks</h1>
+    {% if decks %}
+        <ul class="deck-list">
+            {% for deck in decks %}
+                <li>
+                    <a href="/deck/{{deck.id}}">
+                        {{ deck }} ({{ deck.cards.count }} cards)
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">No decks found. Create one to get started!</p>
+    {% endif %}
+</body>
+</html>

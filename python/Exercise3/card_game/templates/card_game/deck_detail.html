@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ deck }} - Cards</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .back-link:hover { background-color: #5a6268; }
+        .card-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .card-item {
+            padding: 15px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-position { font-weight: bold; color: #007bff; }
+        .card-value { font-size: 18px; color: #333; }
+        .empty { color: #999; }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-link">← Back to Decks</a>
+    <h1>{{ deck }}</h1>
+    
+    {% if cards %}
+        <ul class="card-list">
+            {% for card in cards %}
+                <li class="card-item">
+                    <div class="card-position">Position: {{ card.position }}</div>
+                    <div class="card-value">{{ card }}</div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">This deck has no cards.</p>
+    {% endif %}
+</body>
+</html>
