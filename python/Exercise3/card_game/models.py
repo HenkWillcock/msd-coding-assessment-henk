@@ -86,7 +86,5 @@ class Card(models.Model):
         ]
 
     def __str__(self):
-        if self.picture_value:
-            return f"{self.picture_value} {" of " + self.suit if self.suit else ""}"
-
-        return f"{self.face_value} of {self.suit} (deck {self.deck_id})"
+        value = self.picture_value if self.picture_value else str(self.face_value)
+        return value + (f" of {self.suit}" if self.suit else "")
