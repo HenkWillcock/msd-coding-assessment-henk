@@ -73,4 +73,4 @@ def shuffle_deck(request, deck_id):
     """Shuffle the deck and redirect back to the detail view."""
     deck = get_object_or_404(Deck, id=deck_id)
     deck.shuffle()
-    return redirect(f"/{deck_id}/deck_detail", deck_id=deck_id)
+    return redirect(f"/deck/{deck_id}", deck_id=deck_id)

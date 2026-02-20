@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Q
 import random
 
@@ -15,16 +15,24 @@ class Deck(models.Model):
     def shuffle(self):
         """Randomise card positions within this deck.
 
-        To avoid violating the per-deck unique constraint on ``position`` we
-        reassign temporary positions, then bulk update in a single query.
+        Uses a two-pass approach with temporary large integers to avoid
+        unique constraint violations during the shuffle.
         """
-        cards = list(self.cards.all())
-        random.shuffle(cards)
+        with transaction.atomic():
+            cards = list(self.cards.all())
+            random.shuffle(cards)
 
-        for index, card in enumerate(cards, start=1):
-            card.position = index
+            # First pass: assign temporary large positive positions to avoid conflicts
+            for index, card in enumerate(cards, start=1):
+                card.position = 1000000 + index
 
-        Card.objects.bulk_update(cards, ["position"])
+            Card.objects.bulk_update(cards, ["position"])
+
+            # Second pass: assign final positions
+            for index, card in enumerate(cards, start=1):
+                card.position = index
+
+            Card.objects.bulk_update(cards, ["position"])
 
 
 class PictureValue(models.TextChoices):
