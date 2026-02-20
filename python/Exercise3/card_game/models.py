@@ -1,3 +1,92 @@
 from django.db import models
+from django.db.models import Q, F
+import random
 
-# Create your models here.
+
+class Deck(models.Model):
+    """A collection of cards. The table itself has no extra fields; all
+    information lives on the related Card objects.  A utility method for
+    shuffling the deck is provided.
+    """
+
+    def __str__(self):
+        return f"Deck {self.pk}"
+
+    def shuffle(self):
+        """Randomise card positions within this deck.
+
+        To avoid violating the per-deck unique constraint on ``position`` we
+        reassign temporary positions, then bulk update in a single query.
+        """
+        cards = list(self.cards.all())
+        random.shuffle(cards)
+        # assign new positions in memory
+        for index, card in enumerate(cards, start=1):
+            card.position = index
+        # bulk save all changed cards
+        DeckCard = self.cards.model
+        DeckCard.objects.bulk_update(cards, ["position"])
+
+
+class PictureValue(models.TextChoices):
+    ACE = "A", "Ace"
+    KING = "K", "King"
+    QUEEN = "Q", "Queen"
+    JACK = "J", "Jack"
+    JOKER = "JOKER", "Joker"
+
+
+class Suit(models.TextChoices):
+    HEARTS = "HEARTS", "Hearts"
+    SPADES = "SPADES", "Spades"
+    CLUBS = "CLUBS", "Clubs"
+    DIAMONDS = "DIAMONDS", "Diamonds"
+
+
+class Card(models.Model):
+
+    deck = models.ForeignKey(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name="cards",
+    )
+
+    # exactly one of the next two should be non-null
+    face_value = models.IntegerField(null=True, blank=True)
+    picture_value = models.CharField(
+        max_length=10, choices=PictureValue.choices, null=True, blank=True
+    )
+
+    suit = models.CharField(
+        max_length=10, choices=Suit.choices, null=True, blank=True
+    )
+
+    position = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ("deck", "position")
+        constraints = [
+            # Only one of face_value/picture_value should be populated
+            models.CheckConstraint(
+                condition=(
+                    (Q(face_value__isnull=False) & Q(picture_value__isnull=True))
+                    | (Q(face_value__isnull=True) & Q(picture_value__isnull=False))
+                ),
+                name="card_face_or_picture_exactly_one",
+            ),
+            # If picture_value is Joker then suit must be null;
+            # otherwise suit cannot be null
+            models.CheckConstraint(
+                condition=(
+                    (Q(picture_value=PictureValue.JOKER) & Q(suit__isnull=True))
+                    | ~Q(picture_value=PictureValue.JOKER) & Q(suit__isnull=False)
+                ),
+                name="card_suit_required_unless_joker",
+            ),
+        ]
+
+    def __str__(self):
+        if self.picture_value:
+            return f"{self.picture_value} of {self.suit or 'NoSuit'} (deck {self.deck_id})"
+
+        return f"{self.face_value} of {self.suit} (deck {self.deck_id})"
