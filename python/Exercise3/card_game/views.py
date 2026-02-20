@@ -1,5 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from card_game.models import Deck, Card, PictureValue, Suit
+
 
 
 def deck_list(request):
@@ -66,3 +67,10 @@ def deck_detail(request, deck_id):
     
     cards = deck.cards.all().order_by("position")
     return render(request, "card_game/deck_detail.html", {"deck": deck, "cards": cards})
+
+
+def shuffle_deck(request, deck_id):
+    """Shuffle the deck and redirect back to the detail view."""
+    deck = get_object_or_404(Deck, id=deck_id)
+    deck.shuffle()
+    return redirect(f"/{deck_id}/deck_detail", deck_id=deck_id)

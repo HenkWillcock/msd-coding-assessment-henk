@@ -15,6 +15,22 @@
             border-radius: 5px;
         }
         .back-link:hover { background-color: #5a6268; }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .shuffle-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .shuffle-btn:hover { background-color: #218838; }
         .card-list {
             list-style: none;
             padding: 0;
@@ -37,6 +53,13 @@
 <body>
     <a href="/" class="back-link">← Back to Decks</a>
     <h1>{{ deck }}</h1>
+    
+    <div class="controls">
+        <form method="post" action="/shuffle_deck/{{ deck.id }}/" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="shuffle-btn">🔀 Shuffle Deck</button>
+        </form>
+    </div>
     
     {% if cards %}
         <ul class="card-list">

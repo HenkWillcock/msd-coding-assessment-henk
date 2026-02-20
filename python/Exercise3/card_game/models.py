@@ -20,12 +20,11 @@ class Deck(models.Model):
         """
         cards = list(self.cards.all())
         random.shuffle(cards)
-        # assign new positions in memory
+
         for index, card in enumerate(cards, start=1):
             card.position = index
-        # bulk save all changed cards
-        DeckCard = self.cards.model
-        DeckCard.objects.bulk_update(cards, ["position"])
+
+        Card.objects.bulk_update(cards, ["position"])
 
 
 class PictureValue(models.TextChoices):
