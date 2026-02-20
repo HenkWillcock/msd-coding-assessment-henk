@@ -19,6 +19,6 @@
 
    Once the containers are running you can run migrations and create a superuser:
    ```sh
-   docker-compose run web python manage.py migrate
-   docker-compose run web python manage.py createsuperuser
+   docker-compose run app python manage.py migrate
+   docker-compose run app python manage.py createsuperuser
    ```

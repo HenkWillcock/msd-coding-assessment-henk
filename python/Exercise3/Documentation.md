@@ -1,3 +1,5 @@
+# Planning
+
 ### Development Environment Setup
 
 1. Setup VS Code with all the related extensions.
@@ -63,3 +65,14 @@ We could use GitHub actions or GitLab for a CI/CD pipeline. Ideally we'd have th
 An important decision I made was to keep the "Card" database table relatively unconstrained. For example, it can have face values other than 2 through 10, there can be duplicates within a deck, there can be cards missing from the deck, etc.
 
 The requirements don't specify what card game is being played, so I needed to keep it fluid to avoid broken assumptions later. If I knew what game we were playing, I would've constrained the database more to make things more maintainable.
+
+# Implementation
+
+### Execution
+
+Implementing the app went more or less as planned. I ran into some difficulties with the shuffle function because SQLite doesn't support doing a bulk write of all the records at once, so I kept hitting the position unique constraint.
+
+### Next Steps
+
+* Use a proper database (e.g. Postgres) to replace SQLite, and tidy up the shuffle function.
+* Continue to flesh out the app, allow creating custom decks of cards, and then actual card games, etc.
